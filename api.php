@@ -224,7 +224,7 @@ function handleRegister(): void {
 // ============================================================
 
 function getDashboard(): void {
-    requireAuth();
+    $sess = requireAuth();
     $db = getDB();
 
     $stats = [];
@@ -257,15 +257,22 @@ function getDashboard(): void {
         LIMIT 5
     ")->fetchAll();
 
-    // Recent bookings
-    $recent_bookings = $db->query("
+    // Participants see only their own recent bookings.
+    $recentSql = "
         SELECT b.booking_ref, u.full_name, e.title, b.total_amount, b.status, b.booked_at
         FROM bookings b
         JOIN users  u ON b.user_id  = u.user_id
         JOIN events e ON b.event_id = e.event_id
-        ORDER BY b.booked_at DESC
-        LIMIT 6
-    ")->fetchAll();
+        WHERE 1=1";
+    $recentParams = [];
+    if ((int)$sess['role_id'] === 3) {
+        $recentSql .= " AND b.user_id = ?";
+        $recentParams[] = $sess['user_id'];
+    }
+    $recentSql .= " ORDER BY b.booked_at DESC LIMIT 6";
+    $recentStmt = $db->prepare($recentSql);
+    $recentStmt->execute($recentParams);
+    $recent_bookings = $recentStmt->fetchAll();
 
     // Revenue by month (last 6 months)
     $revenue_chart = $db->query("

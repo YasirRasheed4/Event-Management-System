@@ -287,7 +287,7 @@ async function loadDashboard() {
   renderRevenueChart(d.revenue_chart);
   renderDonutChart(d.category_chart);
 
-  const upcoming = d.upcoming.length ? d.upcoming : DEMO_DATA.events.slice(0,4);
+  const upcoming = d.upcoming || [];
   document.getElementById('upcomingEventsTable').innerHTML = upcoming.map(e => `
     <tr>
       <td><span style="font-weight:600;">${e.title}</span></td>
@@ -297,7 +297,7 @@ async function loadDashboard() {
     </tr>
   `).join('');
 
-  const recent = d.recent_bookings.length ? d.recent_bookings : DEMO_DATA.bookings.slice(0,5);
+  const recent = d.recent_bookings || [];
   document.getElementById('recentBookingsTable').innerHTML = recent.map(b => `
     <tr>
       <td><code style="font-size:12px;color:var(--accent);">${b.booking_ref}</code></td>
@@ -624,7 +624,7 @@ async function loadBookings() {
 
 async function populateBookingModal() {
   const res = await apiCall('events', 'GET', null, { status:'published', limit:50 });
-  const events = res.data?.events || DEMO_DATA.events;
+  const events = res.data?.events || [];
 
   document.getElementById('bkEvent').innerHTML =
     '<option value="">Choose an event…</option>' +
