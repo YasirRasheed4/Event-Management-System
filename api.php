@@ -6,10 +6,15 @@
 // ============================================================
 
 // ---------- CONFIGURATION ----------
-define('DB_HOST', getenv('EMS_DB_HOST') ?: 'localhost');
-define('DB_NAME', getenv('EMS_DB_NAME') ?: 'eventsphere');
-define('DB_USER', getenv('EMS_DB_USER') ?: '');
-define('DB_PASS', getenv('EMS_DB_PASS') ?: '');
+$configPath = __DIR__ . '/config.php';
+if (is_file($configPath)) {
+    require $configPath;
+}
+
+define('DB_HOST', defined('EMS_DB_HOST') ? EMS_DB_HOST : (getenv('EMS_DB_HOST') ?: 'sql304.infinityfree.com'));
+define('DB_NAME', defined('EMS_DB_NAME') ? EMS_DB_NAME : (getenv('EMS_DB_NAME') ?: 'if0_42668311_eventsphere'));
+define('DB_USER', defined('EMS_DB_USER') ? EMS_DB_USER : (getenv('EMS_DB_USER') ?: 'if0_42668311'));
+define('DB_PASS', defined('EMS_DB_PASS') ? EMS_DB_PASS : (getenv('EMS_DB_PASS') ?: ''));
 define('DB_CHARSET', 'utf8mb4');
 
 // ---------- CORS & HEADERS ----------

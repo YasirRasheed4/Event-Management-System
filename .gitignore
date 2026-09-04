@@ -1,6 +1,7 @@
 # Local configuration and credentials
 .env
 *.env
+config.php
 
 # Operating system and editor files
 .DS_Store
