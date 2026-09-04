@@ -1,0 +1,12 @@
+# Local configuration and credentials
+.env
+*.env
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# PHP runtime and temporary files
+*.log
+vendor/

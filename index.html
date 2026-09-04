@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EventSphere — Event Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ======================================================
+     LOGIN PAGE
+====================================================== -->
+<div id="loginPage" class="login-page">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">🌐</div>
+        <div class="logo-text">Event<span>Sphere</span></div>
+      </div>
+      <p class="login-subtitle">Event Management System</p>
+    </div>
+
+    <div class="login-tabs">
+      <div class="login-tab active" onclick="switchAuthTab('login')">Sign In</div>
+      <div class="login-tab" onclick="switchAuthTab('register')">Register</div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input id="loginEmail" type="email" class="form-control" placeholder="Enter your email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input id="loginPass" type="password" class="form-control" placeholder="Enter password"/>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i> Sign In
+      </button>
+
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" style="display:none;">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input id="regName" type="text" class="form-control" placeholder="Your full name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input id="regPhone" type="text" class="form-control" placeholder="+92-300-0000000"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input id="regEmail" type="email" class="form-control" placeholder="yourname@email.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input id="regPass" type="password" class="form-control" placeholder="Min. 6 characters"/>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;" onclick="doRegister()">
+        <i class="fas fa-user-plus"></i> Create Account
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================
+     MAIN APP (hidden until logged in)
+====================================================== -->
+<div id="mainApp" class="app" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">🌐</div>
+        <div class="logo-text">Event<span>Sphere</span></div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)">
+        <i class="fas fa-th-large"></i> Dashboard
+      </div>
+
+      <div class="nav-section-label">Management</div>
+      <div class="nav-item" onclick="showPage('events',this)">
+        <i class="fas fa-calendar-alt"></i> Events
+        <span class="nav-badge" id="eventsCount">—</span>
+      </div>
+      <div class="nav-item" onclick="showPage('venues',this)">
+        <i class="fas fa-map-marker-alt"></i> Venues
+      </div>
+      <div class="nav-item" onclick="showPage('categories',this)">
+        <i class="fas fa-tags"></i> Categories
+      </div>
+
+      <div class="nav-section-label">Operations</div>
+      <div class="nav-item" onclick="showPage('bookings',this)">
+        <i class="fas fa-ticket-alt"></i> Bookings
+      </div>
+      <div class="nav-item" onclick="showPage('payments',this)">
+        <i class="fas fa-credit-card"></i> Payments
+      </div>
+      <div class="nav-item" onclick="showPage('users',this)">
+        <i class="fas fa-users"></i> Users
+      </div>
+
+      <div class="nav-section-label">Analytics</div>
+      <div class="nav-item" onclick="showPage('reports',this)">
+        <i class="fas fa-chart-bar"></i> Reports
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="doLogout()">
+        <div class="user-avatar" id="sidebarAvatar">A</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarName">Admin User</div>
+          <div class="user-role" id="sidebarRole">Administrator</div>
+        </div>
+        <i class="fas fa-sign-out-alt" style="color:var(--muted);font-size:13px;"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search events, users…" id="globalSearch" oninput="handleGlobalSearch(this.value)"/>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-icon" title="Refresh" onclick="refreshCurrentPage()"><i class="fas fa-sync-alt"></i></button>
+        <button class="btn btn-primary btn-sm" onclick="openAddModal()"><i class="fas fa-plus"></i> Add New</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ==================== DASHBOARD ==================== -->
+      <div id="page-dashboard" class="page active">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Welcome back, <span id="dashName">Admin</span> 👋</div>
+            <div class="section-sub" id="dashDate"></div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="loadDashboard()"><i class="fas fa-sync"></i> Refresh</button>
+        </div>
+
+        <!-- STAT CARDS -->
+        <div class="stats-grid">
+          <div class="stat-card" style="--accent-color:#7c6ef5;">
+            <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div class="stat-value" id="statEvents">—</div>
+            <div class="stat-label">Total Events</div>
+            <div class="stat-change up" id="statEventsPublished">— published</div>
+          </div>
+          <div class="stat-card" style="--accent-color:#29d9b0;">
+            <div class="stat-icon" style="background:rgba(41,217,176,0.12);"><i class="fas fa-users"></i></div>
+            <div class="stat-value" id="statUsers">—</div>
+            <div class="stat-label">Total Users</div>
+            <div class="stat-change up" id="statParticipants">— participants</div>
+          </div>
+          <div class="stat-card" style="--accent-color:#e066a0;">
+            <div class="stat-icon" style="background:rgba(224,102,160,0.12);"><i class="fas fa-ticket-alt"></i></div>
+            <div class="stat-value" id="statBookings">—</div>
+            <div class="stat-label">Total Bookings</div>
+            <div class="stat-change up" id="statConfirmed">— confirmed</div>
+          </div>
+          <div class="stat-card" style="--accent-color:#f5a623;">
+            <div class="stat-icon" style="background:rgba(245,166,35,0.12);"><i class="fas fa-rupee-sign"></i></div>
+            <div class="stat-value" id="statRevenue">—</div>
+            <div class="stat-label">Total Revenue (PKR)</div>
+            <div class="stat-change up" id="statMonthRevenue">This month: —</div>
+          </div>
+        </div>
+
+        <!-- CHARTS + UPCOMING -->
+        <div class="grid-2" style="margin-bottom:24px;">
+          <div class="card">
+            <div class="table-header" style="border:none;padding:0 0 16px;">
+              <span class="table-title">Revenue (Last 6 Months)</span>
+            </div>
+            <div class="chart-box" id="revenueChart"></div>
+          </div>
+          <div class="card">
+            <div class="table-header" style="border:none;padding:0 0 16px;">
+              <span class="table-title">Events by Category</span>
+            </div>
+            <div id="categoryChart" style="display:flex;align-items:center;gap:24px;">
+              <canvas id="donutCanvas" width="130" height="130"></canvas>
+              <div class="donut-legend" id="donutLegend"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- UPCOMING EVENTS + RECENT BOOKINGS -->
+        <div class="grid-2">
+          <div class="table-wrapper">
+            <div class="table-header">
+              <span class="table-title">Upcoming Events</span>
+              <button class="btn btn-outline btn-sm" onclick="showPage('events',null)">View All</button>
+            </div>
+            <table>
+              <thead><tr><th>Event</th><th>Date</th><th>Seats</th><th>Price</th></tr></thead>
+              <tbody id="upcomingEventsTable"></tbody>
+            </table>
+          </div>
+          <div class="table-wrapper">
+            <div class="table-header">
+              <span class="table-title">Recent Bookings</span>
+              <button class="btn btn-outline btn-sm" onclick="showPage('bookings',null)">View All</button>
+            </div>
+            <table>
+              <thead><tr><th>Ref</th><th>Participant</th><th>Amount</th><th>Status</th></tr></thead>
+              <tbody id="recentBookingsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== EVENTS PAGE ==================== -->
+      <div id="page-events" class="page">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Events</div>
+            <div class="section-sub">Manage all events in the system</div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('eventModal')">
+            <i class="fas fa-plus"></i> New Event
+          </button>
+        </div>
+
+        <div class="filter-bar">
+          <div class="filter-chip active" onclick="filterEvents('all',this)">All</div>
+          <div class="filter-chip" onclick="filterEvents('published',this)">Published</div>
+          <div class="filter-chip" onclick="filterEvents('draft',this)">Draft</div>
+          <div class="filter-chip" onclick="filterEvents('cancelled',this)">Cancelled</div>
+          <div class="filter-chip" onclick="filterEvents('completed',this)">Completed</div>
+        </div>
+
+        <div id="eventsGrid" class="events-grid">
+          <div class="empty-state"><i class="fas fa-calendar-times"></i><p>Loading events…</p></div>
+        </div>
+      </div>
+
+      <!-- ==================== VENUES PAGE ==================== -->
+      <div id="page-venues" class="page">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Venues</div>
+            <div class="section-sub">Manage event locations and facilities</div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('venueModal')">
+            <i class="fas fa-plus"></i> Add Venue
+          </button>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Venue</th><th>City</th><th>Capacity</th><th>Contact</th><th>Facilities</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="venuesTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== CATEGORIES PAGE ==================== -->
+      <div id="page-categories" class="page">
+        <div class="section-header">
+          <div class="section-title">Event Categories</div>
+        </div>
+        <div class="grid-3" id="categoriesGrid"></div>
+      </div>
+
+      <!-- ==================== BOOKINGS PAGE ==================== -->
+      <div id="page-bookings" class="page">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Bookings</div>
+            <div class="section-sub">All participant registrations</div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('bookingModal')">
+            <i class="fas fa-plus"></i> New Booking
+          </button>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Ref</th><th>Participant</th><th>Event</th><th>Tickets</th><th>Amount</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="bookingsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== PAYMENTS PAGE ==================== -->
+      <div id="page-payments" class="page">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Payments</div>
+            <div class="section-sub">Transaction history and records</div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Booking Ref</th><th>Participant</th><th>Event</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr>
+            </thead>
+            <tbody id="paymentsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== USERS PAGE ==================== -->
+      <div id="page-users" class="page">
+        <div class="section-header">
+          <div class="section-title">Users & Participants</div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Bookings</th><th>Status</th><th>Joined</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="usersTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== REPORTS PAGE ==================== -->
+      <div id="page-reports" class="page">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Reports & Analytics</div>
+            <div class="section-sub">Insights and performance metrics</div>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-chip active" onclick="loadReport('overview',this)">Overview</div>
+          <div class="filter-chip" onclick="loadReport('top_events',this)">Top Events</div>
+          <div class="filter-chip" onclick="loadReport('revenue',this)">Revenue</div>
+          <div class="filter-chip" onclick="loadReport('payments',this)">Payment Methods</div>
+        </div>
+        <div id="reportsContent"></div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div><!-- /app -->
+
+<!-- ======================================================
+     TOAST CONTAINER
+====================================================== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ======================================================
+     MODALS
+====================================================== -->
+
+<!-- EVENT MODAL -->
+<div class="modal-overlay" id="eventModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Create New Event</div>
+      <button class="modal-close" onclick="closeModal('eventModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Event Title *</label>
+      <input id="evTitle" type="text" class="form-control" placeholder="e.g. National Tech Conference 2025"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select id="evCategory" class="form-control"><option value="">Select category…</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Venue *</label>
+        <select id="evVenue" class="form-control"><option value="">Select venue…</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Event Date *</label>
+        <input id="evDate" type="date" class="form-control"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Total Seats *</label>
+        <input id="evSeats" type="number" class="form-control" placeholder="e.g. 200" min="1"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Start Time *</label>
+        <input id="evStart" type="time" class="form-control"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">End Time *</label>
+        <input id="evEnd" type="time" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Ticket Price (PKR)</label>
+        <input id="evPrice" type="number" class="form-control" placeholder="0 for free" min="0"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select id="evStatus" class="form-control">
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea id="evDesc" class="form-control" placeholder="Describe the event…"></textarea>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal('eventModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitEvent()"><i class="fas fa-save"></i> Save Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- VENUE MODAL -->
+<div class="modal-overlay" id="venueModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add New Venue</div>
+      <button class="modal-close" onclick="closeModal('venueModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Venue Name *</label>
+      <input id="vnName" type="text" class="form-control" placeholder="e.g. Grand Convention Hall"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">City *</label>
+        <input id="vnCity" type="text" class="form-control" placeholder="e.g. Islamabad"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Capacity *</label>
+        <input id="vnCap" type="number" class="form-control" placeholder="e.g. 500" min="1"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Address *</label>
+      <input id="vnAddr" type="text" class="form-control" placeholder="Full address"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Contact Info</label>
+        <input id="vnContact" type="text" class="form-control" placeholder="+92-51-…"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Country</label>
+        <input id="vnCountry" type="text" class="form-control" value="Pakistan"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Facilities</label>
+      <input id="vnFacilities" type="text" class="form-control" placeholder="WiFi, Projector, Parking…"/>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal('venueModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitVenue()"><i class="fas fa-save"></i> Save Venue</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Create Booking</div>
+      <button class="modal-close" onclick="closeModal('bookingModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Select Event *</label>
+      <select id="bkEvent" class="form-control"><option value="">Choose an event…</option></select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Number of Tickets</label>
+        <input id="bkNum" type="number" class="form-control" value="1" min="1" max="10"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Method</label>
+        <select id="bkMethod" class="form-control">
+          <option value="cash">Cash</option>
+          <option value="card">Card</option>
+          <option value="easypaisa">EasyPaisa</option>
+          <option value="jazzcash">JazzCash</option>
+          <option value="bank_transfer">Bank Transfer</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal('bookingModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitBooking()"><i class="fas fa-ticket-alt"></i> Book Tickets</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================
+     JAVASCRIPT
+====================================================== -->
+<script src="script.js"></script>
+</body>
+</html>
