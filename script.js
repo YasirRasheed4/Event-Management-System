@@ -185,7 +185,6 @@ function initApp() {
   document.getElementById('dashDate').textContent = now.toLocaleDateString('en-US',{ weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
   loadDashboard();
-  loadEventsCount();
 }
 
 async function doRegister() {

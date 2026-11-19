@@ -168,16 +168,32 @@
   }
 
   async function getDashboard() {
-    const [eventsData, bookings, payments, profilesResult, categories] = await Promise.all([
-      getEvents({ status: 'all', limit: 1000 }),
-      getBookings(),
-      getPayments(),
-      client.from('profiles').select('user_id, role_id, is_active'),
+    // Keep the first screen fast: the full tables are loaded only when their
+    // respective pages are opened.
+    const [eventsResult, bookingsResult, paymentsResult, profilesResult, categories] = await Promise.all([
+      client.from('events')
+        .select('event_id, category_id, title, event_date, available_seats, ticket_price, status', { count: 'exact' })
+        .order('event_date', { ascending: true })
+        .limit(500),
+      client.from('bookings')
+        .select('booking_id, user_id, booking_ref, total_amount, status, booked_at, num_tickets, profiles(full_name)', { count: 'exact' })
+        .order('booked_at', { ascending: false })
+        .limit(500),
+      client.from('payments')
+        .select('amount, status, paid_at')
+        .order('paid_at', { ascending: false })
+        .limit(1000),
+      client.from('profiles').select('user_id, role_id, is_active').limit(1000),
       getCategories(),
     ]);
+    if (eventsResult.error) throw eventsResult.error;
+    if (bookingsResult.error) throw bookingsResult.error;
+    if (paymentsResult.error) throw paymentsResult.error;
     if (profilesResult.error) throw profilesResult.error;
 
-    const events = eventsData.events;
+    const events = eventsResult.data || [];
+    const bookings = bookingsResult.data || [];
+    const payments = paymentsResult.data || [];
     const completedPayments = payments.filter(p => p.status === 'completed');
     const now = new Date();
     const month = now.getMonth();
@@ -210,17 +226,20 @@
 
     return {
       stats: {
-        total_events: events.length,
+        total_events: eventsResult.count ?? events.length,
         published_events: events.filter(e => e.status === 'published').length,
         total_users: profilesResult.data?.length || 0,
         total_participants: (profilesResult.data || []).filter(p => Number(p.role_id) === 3).length,
-        total_bookings: bookings.length,
+        total_bookings: bookingsResult.count ?? bookings.length,
         confirmed_bookings: bookings.filter(b => b.status === 'confirmed').length,
         total_revenue: sum(completedPayments, 'amount'),
         monthly_revenue: sum(completedPayments, 'amount', isThisMonth),
       },
       upcoming,
-      recent_bookings: bookings.slice(0, 6),
+      recent_bookings: bookings.slice(0, 6).map(booking => ({
+        ...booking,
+        full_name: related(booking.profiles).full_name || '',
+      })),
       revenue_chart: Object.entries(revenueByMonth).sort(([a], [b]) => a.localeCompare(b)).slice(-6).map(([key, revenue]) => {
         const [y, m] = key.split('-').map(Number);
         return { month: new Date(y, m - 1, 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), revenue };
