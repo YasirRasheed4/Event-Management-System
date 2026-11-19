@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="manifest" href="manifest.json">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>EventSphere — Event Management System</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
+<style>
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .logo-img { width: 32px; height: 32px; object-fit: contain; border-radius: 6px; }
+</style>
 </head>
 <body>
 
@@ -17,8 +22,8 @@
   <div class="login-bg"></div>
   <div class="login-card">
     <div class="login-logo">
-      <div class="logo-mark">
-        <div class="logo-icon">🌐</div>
+      <div class="brand" style="justify-content: center; margin-bottom: 12px;">
+        <img src="assets/logo.png" alt="EventSphere Logo" class="logo-img"style="height: 90px; width: auto;"/>
         <div class="logo-text">Event<span>Sphere</span></div>
       </div>
       <p class="login-subtitle">Event Management System</p>
@@ -42,7 +47,6 @@
       <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;" onclick="doLogin()">
         <i class="fas fa-sign-in-alt"></i> Sign In
       </button>
-
     </div>
 
     <!-- REGISTER FORM -->
@@ -80,8 +84,8 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-mark">
-        <div class="logo-icon">🌐</div>
+      <div class="brand">
+        <img src="assets/logo.png" alt="EventSphere Logo" class="logo-img"> 
         <div class="logo-text">Event<span>Sphere</span></div>
       </div>
     </div>

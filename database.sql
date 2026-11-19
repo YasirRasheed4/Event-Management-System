@@ -286,7 +286,7 @@ FROM bookings b
 JOIN users        u  ON b.user_id        = u.user_id
 JOIN events       e  ON b.event_id       = e.event_id
 LEFT JOIN ticket_types tt ON b.ticket_type_id = tt.ticket_type_id
-LEFT JOIN payments p  ON b.booking_id    = p.payment_id;
+LEFT JOIN payments p  ON b.booking_id    = p.booking_id;
 
 -- View: Revenue by month
 CREATE OR REPLACE VIEW vw_monthly_revenue AS
