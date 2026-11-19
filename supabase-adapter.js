@@ -304,10 +304,14 @@
       }
 
       if (resource === 'register' && method === 'POST') {
+        const authOptions = { data: { full_name: body.full_name, phone: body.phone || '' } };
+        if (window.SUPABASE_EMAIL_REDIRECT_URL) {
+          authOptions.emailRedirectTo = window.SUPABASE_EMAIL_REDIRECT_URL;
+        }
         const { data, error } = await client.auth.signUp({
           email: body.email,
           password: body.password,
-          options: { data: { full_name: body.full_name, phone: body.phone || '' } },
+          options: authOptions,
         });
         if (error) return failure(error);
         const message = data.session
@@ -412,6 +416,19 @@
   }
 
   window.supabaseApiCall = supabaseApiCall;
+  window.resendSupabaseConfirmation = async function (email) {
+    const options = {};
+    if (window.SUPABASE_EMAIL_REDIRECT_URL) {
+      options.emailRedirectTo = window.SUPABASE_EMAIL_REDIRECT_URL;
+    }
+    const { error } = await client.auth.resend({
+      type: 'signup',
+      email,
+      options,
+    });
+    return error ? failure(error) : success(null, 'Confirmation email sent.');
+  };
+
   window.restoreSupabaseSession = async function () {
     try {
       const user = await authUser();

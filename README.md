@@ -26,7 +26,7 @@ Visit the live application: [https://eventsphere.freedev.app/](https://eventsphe
 
 1. Create or open the Supabase project configured in `supabase-adapter.js`.
 2. Open **SQL Editor** in Supabase and run [`supabase/schema.sql`](supabase/schema.sql).
-3. In **Authentication → Providers**, enable Email. Keep email confirmation enabled for production.
+3. In **Authentication → Providers → Email**, enable Email. For local testing you may turn **Confirm email** off; for production keep it enabled. When it is enabled, users must click the confirmation link before signing in, and the login page can resend that link.
 4. Register an account from the app.
 5. To make the first account an administrator, open **Table Editor → profiles** and change its `role_id` to `1`.
 6. Host this folder as a static site. No PHP server is required for the browser app.

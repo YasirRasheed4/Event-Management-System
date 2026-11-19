@@ -145,11 +145,29 @@ async function doLogin() {
       currentUser = res.data;
       initApp();
     } else {
-      toast(res.message || 'Login failed.', 'error');
+      const message = /email not confirmed/i.test(res.message || '')
+        ? 'Email not confirmed. Check your inbox or resend the confirmation email.'
+        : (res.message || 'Login failed.');
+      toast(message, 'error');
     }
   } catch (error) {
     toast(error.message || 'Unable to connect to the server.', 'error');
   }
+}
+
+async function resendConfirmationEmail() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) {
+    toast('Enter your email address first.', 'warning');
+    return;
+  }
+  if (!window.resendSupabaseConfirmation) {
+    toast('Supabase is not available.', 'error');
+    return;
+  }
+
+  const res = await window.resendSupabaseConfirmation(email);
+  toast(res.success ? res.message : (res.message || 'Could not send confirmation email.'), res.success ? 'success' : 'error');
 }
 
 function initApp() {
