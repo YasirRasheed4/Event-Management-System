@@ -15,39 +15,34 @@ Event management system for organizing events, venues, bookings, users, and paym
 ## Technology
 
 - HTML, CSS, and vanilla JavaScript
-- PHP 8+
-- MySQL
-- PDO for database access
+- Supabase Auth and PostgreSQL
+- Supabase JavaScript client
 
 ## Website
 
 Visit the live application: [https://eventsphere.freedev.app/](https://eventsphere.freedev.app/)
 
-## Local Development
+## Supabase setup
 
-Run the PHP development server from this folder:
+1. Create or open the Supabase project configured in `supabase-adapter.js`.
+2. Open **SQL Editor** in Supabase and run [`supabase/schema.sql`](supabase/schema.sql).
+3. In **Authentication → Providers**, enable Email. Keep email confirmation enabled for production.
+4. Register an account from the app.
+5. To make the first account an administrator, open **Table Editor → profiles** and change its `role_id` to `1`.
+6. Host this folder as a static site. No PHP server is required for the browser app.
 
-```powershell
-php -S localhost:8000
-```
+The browser uses the Supabase publishable key in `supabase-adapter.js`. This key is designed for public clients; database access is protected by the RLS policies in `supabase/schema.sql`. Never put a Supabase secret/service-role key in the browser.
 
-Then open `http://localhost:8000/index.html`.
+## Legacy PHP/MySQL files
 
-## Database Setup
-
-1. Create a MySQL database.
-2. Import `database.sql` using phpMyAdmin or the MySQL command line.
-3. Copy `config.example.php` to `config.php`.
-4. Add your private database connection values to `config.php`.
-5. Keep `config.php` out of GitHub; it is listed in `.gitignore`.
+`api.php`, `database.sql`, and `config.example.php` are retained as the original PHP/MySQL implementation. They are no longer used by the frontend after the Supabase migration.
 
 ## Project Files
 
 - `index.html` - application interface
 - `style.css` - visual styling and responsive layout
 - `script.js` - frontend interactions and API requests
-- `api.php` - PHP API and authentication handlers
-- `database.sql` - database schema and sample structure
-- `config.example.php` - safe configuration template
-
-Database credentials belong in a local or hosted `config.php` file and must not be committed to GitHub.
+- `supabase-adapter.js` - Supabase client and data operations
+- `supabase/schema.sql` - PostgreSQL tables, Auth profile trigger, RPC, and RLS policies
+- `api.php` - legacy PHP API
+- `database.sql` - legacy MySQL schema

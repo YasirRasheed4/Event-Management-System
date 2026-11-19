@@ -1,6 +1,7 @@
 <?php
-// Copy this file to config.php on the PHP host and enter the database password.
-define('EMS_DB_HOST', 'sql304.infinityfree.com');
-define('EMS_DB_NAME', 'if0_42668311_eventsphere');
-define('EMS_DB_USER', 'if0_42668311');
-define('EMS_DB_PASS', 'YasirGill2006');
+// Legacy PHP API configuration. The browser app now uses Supabase directly.
+// Copy this file to config.php only if you intentionally run api.php.
+define('EMS_DB_HOST', 'localhost');
+define('EMS_DB_NAME', 'eventsphere');
+define('EMS_DB_USER', 'your_database_user');
+define('EMS_DB_PASS', 'your_database_password');

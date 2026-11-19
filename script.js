@@ -1,14 +1,13 @@
 // ============================================================
 //  CONFIG
 // ============================================================
-const API = window.EVENT_API_URL || 'api.php';   // Set EVENT_API_URL when the API is hosted separately
 let currentUser = null;
 let currentPage = 'dashboard';
 let allEvents   = [];
 
 // ============================================================
-//  DEMO MODE — runs without a real PHP backend
-//  Set DEMO = false when your backend is ready
+//  DEMO MODE — optional offline preview using the built-in sample data
+//  Keep this false to use Supabase.
 // ============================================================
 const DEMO = false;
 
@@ -82,29 +81,7 @@ const DEMO_DATA = {
 // ============================================================
 async function apiCall(resource, method='GET', body=null, params={}) {
   if (DEMO) return demoPatch(resource, method, body, params);
-
-  const url = new URL(API, location.href);
-  url.searchParams.set('resource', resource);
-  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
-
-  const opts = { method, credentials:'include', headers:{'Content-Type':'application/json'} };
-  if (body) opts.body = JSON.stringify(body);
-  if (location.protocol === 'file:') {
-    throw new Error('Open this app through a PHP web server; do not open index.html directly.');
-  }
-
-  let res;
-  try {
-    res = await fetch(url, opts);
-  } catch (error) {
-    throw new Error(`Cannot reach the API at ${url.pathname}. Check that api.php is hosted with the app.`);
-  }
-  const payload = await res.json().catch(() => null);
-  if (!res.ok) {
-    throw new Error(payload?.message || `API request failed (${res.status}).`);
-  }
-  if (!payload) throw new Error('The API returned an invalid response. Check the PHP server.');
-  return payload;
+  return window.supabaseApiCall(resource, method, body, params);
 }
 
 // Demo mode response handler
@@ -949,4 +926,13 @@ window.addEventListener('DOMContentLoaded', () => {
         day:'numeric'
       }
     );
+
+  if (!DEMO && window.restoreSupabaseSession) {
+    window.restoreSupabaseSession().then(user => {
+      if (user) {
+        currentUser = user;
+        initApp();
+      }
+    });
+  }
 });
