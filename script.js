@@ -241,7 +241,9 @@ function refreshCurrentPage() { showPage(currentPage, null); }
 
 function openAddModal() {
   const modals = { events:'eventModal', venues:'venueModal', bookings:'bookingModal' };
-  if (modals[currentPage]) openModal(modals[currentPage]);
+  // The dashboard and read-only pages do not have a page-specific create form.
+  // Default the global button to creating an event so it always has an action.
+  openModal(modals[currentPage] || 'eventModal');
 }
 
 // ============================================================

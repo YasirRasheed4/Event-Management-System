@@ -33,10 +33,6 @@ Visit the live application: [https://eventsphere.freedev.app/](https://eventsphe
 
 The browser uses the Supabase publishable key in `supabase-adapter.js`. This key is designed for public clients; database access is protected by the RLS policies in `supabase/schema.sql`. Never put a Supabase secret/service-role key in the browser.
 
-## Legacy PHP/MySQL files
-
-`api.php`, `database.sql`, and `config.example.php` are retained as the original PHP/MySQL implementation. They are no longer used by the frontend after the Supabase migration.
-
 ## Project Files
 
 - `index.html` - application interface
@@ -44,5 +40,3 @@ The browser uses the Supabase publishable key in `supabase-adapter.js`. This key
 - `script.js` - frontend interactions and API requests
 - `supabase-adapter.js` - Supabase client and data operations
 - `supabase/schema.sql` - PostgreSQL tables, Auth profile trigger, RPC, and RLS policies
-- `api.php` - legacy PHP API
-- `database.sql` - legacy MySQL schema

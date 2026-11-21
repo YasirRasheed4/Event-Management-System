@@ -3,6 +3,7 @@
 *.env
 .env.local
 config.php
+.mcp.json
 
 # Operating system and editor files
 .DS_Store
